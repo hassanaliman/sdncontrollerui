@@ -1,0 +1,141 @@
+<template>
+    <div class="container">
+        <header class="jumbtron">
+            <!-- <h3>{{ content }}</h3> -->
+        <div v-for="(hehe, indox) in content.statistics" :key="hehe.id">
+            <p>{{ indox }} - {{ hehe.device }}</p>
+            <ul>
+                <li v-for="(item, index) in hehe.ports" :key="item.id">{{index}}. Port {{item.port}} - {{ item.bytesReceived }} bytes
+                    
+                </li>    
+            </ul>
+        </div>
+        </header>
+        <div>
+            <Line ref="myChart" :data="chartData" />
+        </div>
+    </div>
+</template>
+
+<script>
+import UserService from '../services/user.service';
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js'
+import { Line } from 'vue-chartjs'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
+export default {
+    name: "MonitoringPage",
+    components: {Line},
+    computed: {
+        chartData() {
+            return {
+                labels: this.labeltime,
+            datasets: this.datacontent,
+            }
+        },
+        chartOptions() {
+            return {
+                responsive: true, maintainAspectRatio: false
+            }
+        }
+    },
+    data() {
+        return {
+            content: "",
+            timer: "",
+        labeltime: [],
+        datacontent: [
+        {
+                    label: ["hehe"],
+                    data: [Math.floor(Math.random() * 100), 
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100)]
+                },
+                {
+                    label: ["hihi"],
+                    data: [Math.floor(Math.random() * 100), 
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100)]
+                }
+        ],
+        store: []
+        }
+    },
+    async mounted() {
+        await UserService.getMonitoring().then((response) => {
+            this.content = response.data;
+            this.store.push(this.content);
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
+         
+        var d = new Date();
+        this.labeltime = [d.getTime,
+        d.getTime,
+        d.getTime,
+        d.getTime,
+        ];
+
+        const stat = this.content.statistics[0];           
+        this.datacontent[0].label[0] = stat.device;
+    },
+    created() {
+        this.updateData();
+        this.timer = setInterval(this.updateData, 2000)
+
+    },
+    methods: {
+        updateData() {
+            UserService.getMonitoring().then((response) => {
+            this.content = response.data;
+
+            this.chartData.datasets[0].data[0] = [Math.floor(Math.random() * 100), 
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100)];
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
+        },
+        cancelAutoUpdate () {
+            clearInterval(this.timer);
+        }
+        
+    },
+    beforeUnmount() {
+        this.cancelAutoUpdate();
+    }
+}
+</script>
