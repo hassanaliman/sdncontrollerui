@@ -12,8 +12,8 @@ class UserService {
         return axios.get(`${API_URL}/monitoring`, { headers: authHeader() });
     }
 
-    getConfig() {
-        return axios.get(`${API_URL}/config`, { headers: authHeader() });
+    getApp() {
+        return axios.get(`${API_URL}/app`, { headers: authHeader() });
     }
 
     activateApp(appName) {
@@ -26,6 +26,14 @@ class UserService {
 
     getDevice() {
         return axios.get(`${API_URL}/device`, { headers: authHeader() });
+    }
+
+    portConfig(deviceId, portNum, portName) {
+        return axios.post(`${API_URL}/portconfig`, { headers: authHeader(), id: deviceId, port: portNum, name: portName })
+    }
+
+    getConfig() {
+        return axios.get(`${API_URL}/config`, { headers: authHeader() });
     }
 }
 

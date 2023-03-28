@@ -53,47 +53,79 @@
     </h2>
     <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
       <div class="accordion-body">
-        <!-- <ul v-for="(item2, index2) in devices.devices" :key="index2">
-            <li>{{ item2.id }}</li>
-        </ul> -->
-
         <div class="container text-center">
-  <div class="row">
-    <div class="col">
-        <strong>Choose Device:</strong>
-    <select required
-      v-model="selected"
-      class="form-select mb-3 mt-3"
-      aria-label="Select a device"
-      placeholder="Choose a Device"
-    >
-      <option
-        v-for="(device, indexDevice) in devices.devices"
-        v-bind:value="{ id: device.id, text: device.hw }"
-        :key="indexDevice" 
-      >
-        {{ device.id }}
-      </option>
-    </select>
-
-    <p>Message is: {{ selected }}</p>
-    </div>
-    <div class="col">
-        <strong>Choose Port:</strong>
-        <div class="input-group mb-3 mt-3">
-        <input type="number" v-model="portnum" min="1" class="form-control" placeholder="Choose Port">
-    </div>
-    <p>Message is: {{ portnum }}</p>
-    </div>
-    <div class="col">
-        <strong>Port Name:</strong>
-        <div class="input-group mb-3 mt-3">
-        <input type="text" v-model="portname" min="1" class="form-control" placeholder="Port Name">
+            <div class="row">
+                <div class="col">
+                    <strong>Choose Device:</strong>
+                    <select required
+                        v-model="selected"
+                        class="form-select mb-3 mt-3"
+                        aria-label="Select a device"
+                        placeholder="Choose a Device">
+                    
+                    <option
+                        v-for="(device, indexDevice) in devices.devices"
+                        v-bind:value="{ id: device.id, text: device.hw }"
+                        :key="indexDevice">
+                        {{ device.id }}
+                    </option>
+                    </select>
+                </div>
+    
+                <div class="col">
+                   <strong>Choose Port:</strong>
+                    <div class="input-group mb-3 mt-3">
+                    <input type="number" v-model="portnum" min="1" class="form-control" placeholder="Choose Port">
+                </div>
+            </div>
+            
+        <div class="col">
+            <strong>Port Name:</strong>
+            <div class="input-group mb-3 mt-3">
+                <input type="text" v-model="portname" min="1" class="form-control" placeholder="Port Name">
+            </div>
+            </div>
         </div>
-    <p>Message is: {{ portname }}</p>
+        </div>
+        <button type="button" class="btn btn-primary" @click="configPort(selected.id, portnum, portname)">Submit Config</button>
+        <!-- <button type="button" class="btn btn-primary" @click="getconfig()">test</button> -->
+        
+        <!-- {{ getconfig }} -->
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Device ID/port</th>
+                    <th scope="col">Port Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(itemport, index2) in getconfig.ports" :key="index2">
+                    <td scope="col">
+                        <!-- {{ Object.keys(itemport)}} -->
+                        {{ index2 }}
+                    </td>
+                    <td scope="col">
+                        {{ itemport.interfaces[0].name }}
+                    </td>
+                    <!-- <td scope="col">
+                        {{ itemport["name"] }}
+                    </td>
+                    <td scope="col">
+                        {{ itemport["description"] }}
+                    </td> -->
+                    <!-- <td scope="col">
+                        <p v-show="item['state'] == 'ACTIVE'" style="color: green; font-weight: bold;">{{ item['state'] }}</p>
+                        <p v-show="item['state'] == 'INSTALLED'">{{ item['state'] }}</p>
+                    </td>
+                     <td scope="col">
+                        <button type="button" v-show="item['state'] == 'INSTALLED'" class="btn btn-primary" @click="activateApp(item['name'])">Activate</button>
+                        <button type="button" v-show="item['state'] == 'ACTIVE'" class="btn btn-danger" @click="deActivateApp(item['name'])">Deactivate</button>
+                    </td>  -->
+                </tr>
+            </tbody>
+        </table>
     </div>
-  </div>
-</div>
       </div>
     </div>
   </div>
@@ -113,11 +145,13 @@ export default {
             portname: "",
             activateAppmsg: "",
             activateAppSuccess: false,
-            portnum: ""
+            portnum: "",
+            portconfigmsg: "",
+            getconfig:""
         }
     },
     mounted() {
-        UserService.getConfig().then((response) => {
+        UserService.getApp().then((response) => {
             this.content = response.data;
         },
         (error) => {
@@ -131,6 +165,18 @@ export default {
 
         UserService.getDevice().then((response) => {
             this.devices = response.data;
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
+
+        UserService.getConfig().then((response) => {
+            this.getconfig = response.data;
         },
         (error) => {
             this.content = 
@@ -159,7 +205,7 @@ export default {
             });
         },
         updateData() {
-            UserService.getConfig().then((response) => {
+            UserService.getApp().then((response) => {
             this.content = response.data;
         },
         (error) => {
@@ -170,6 +216,24 @@ export default {
                 error.message || 
                 error.toString();
         });
+
+        UserService.getConfig().then((response) => {
+            this.getconfig = response.data;
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
+        },
+        configPort(id, port, name) {
+            UserService.portConfig(id, port.toString(), name).then((response) => {
+                this.portconfigmsg = response.data;
+                this.updateData();
+            });
         }
     }
 }
