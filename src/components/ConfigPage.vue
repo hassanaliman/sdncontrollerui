@@ -56,20 +56,44 @@
         <!-- <ul v-for="(item2, index2) in devices.devices" :key="index2">
             <li>{{ item2.id }}</li>
         </ul> -->
+
+        <div class="container text-center">
+  <div class="row">
+    <div class="col">
         <strong>Choose Device:</strong>
     <select required
       v-model="selected"
-      class="form-select mb-3"
+      class="form-select mb-3 mt-3"
       aria-label="Select a device"
+      placeholder="Choose a Device"
     >
       <option
         v-for="(device, indexDevice) in devices.devices"
         v-bind:value="{ id: device.id, text: device.hw }"
-        :key="indexDevice"
+        :key="indexDevice" 
       >
         {{ device.id }}
       </option>
     </select>
+
+    <p>Message is: {{ selected }}</p>
+    </div>
+    <div class="col">
+        <strong>Choose Port:</strong>
+        <div class="input-group mb-3 mt-3">
+        <input type="number" v-model="portnum" min="1" class="form-control" placeholder="Choose Port">
+    </div>
+    <p>Message is: {{ portnum }}</p>
+    </div>
+    <div class="col">
+        <strong>Port Name:</strong>
+        <div class="input-group mb-3 mt-3">
+        <input type="text" v-model="portname" min="1" class="form-control" placeholder="Port Name">
+        </div>
+    <p>Message is: {{ portname }}</p>
+    </div>
+  </div>
+</div>
       </div>
     </div>
   </div>
@@ -86,8 +110,10 @@ export default {
             content: "",
             devices: "",
             selected: "",
+            portname: "",
             activateAppmsg: "",
             activateAppSuccess: false,
+            portnum: ""
         }
     },
     mounted() {
