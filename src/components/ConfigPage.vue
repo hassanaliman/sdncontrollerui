@@ -48,12 +48,28 @@
   <div class="accordion-item">
     <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-        Accordion Item #2
+        Port Configuration
       </button>
     </h2>
     <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
       <div class="accordion-body">
-        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        <!-- <ul v-for="(item2, index2) in devices.devices" :key="index2">
+            <li>{{ item2.id }}</li>
+        </ul> -->
+        <strong>Choose Device:</strong>
+    <select required
+      v-model="selected"
+      class="form-select mb-3"
+      aria-label="Select a device"
+    >
+      <option
+        v-for="(device, indexDevice) in devices.devices"
+        v-bind:value="{ id: device.id, text: device.hw }"
+        :key="indexDevice"
+      >
+        {{ device.id }}
+      </option>
+    </select>
       </div>
     </div>
   </div>
@@ -68,6 +84,8 @@ export default {
     data() {
         return {
             content: "",
+            devices: "",
+            selected: "",
             activateAppmsg: "",
             activateAppSuccess: false,
         }
@@ -75,6 +93,18 @@ export default {
     mounted() {
         UserService.getConfig().then((response) => {
             this.content = response.data;
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
+
+        UserService.getDevice().then((response) => {
+            this.devices = response.data;
         },
         (error) => {
             this.content = 

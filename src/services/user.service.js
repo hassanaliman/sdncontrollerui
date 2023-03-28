@@ -16,20 +16,16 @@ class UserService {
         return axios.get(`${API_URL}/config`, { headers: authHeader() });
     }
 
-    setOpenflow() {
-        return axios.post(`${API_URL}/setopenflow`, { headers: authHeader() });
-    }
-
-    setReactivefwd() {
-        return axios.post(`${API_URL}/setfwd`, { headers: authHeader() });
-    }
-
     activateApp(appName) {
         return axios.post(`${API_URL}/activate`, { headers: authHeader(), name: appName })
     }
 
     deActivateApp(appName) {
         return axios.post(`${API_URL}/deactivate`, { headers: authHeader(), name: appName })
+    }
+
+    getDevice() {
+        return axios.get(`${API_URL}/device`, { headers: authHeader() });
     }
 }
 
