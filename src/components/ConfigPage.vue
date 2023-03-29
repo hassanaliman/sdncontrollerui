@@ -94,7 +94,7 @@
                 <tr>
                     <th scope="col">Device ID/port</th>
                     <th scope="col">Port Name</th>
-                    <th scope="col">Action</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
