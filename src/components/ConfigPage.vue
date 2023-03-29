@@ -88,40 +88,26 @@
         </div>
         </div>
         <button type="button" class="btn btn-primary" @click="configPort(selected.id, portnum, portname)">Submit Config</button>
-        <!-- <button type="button" class="btn btn-primary" @click="getconfig()">test</button> -->
-        
-        <!-- {{ getconfig }} -->
-        <div class="table-responsive">
+        <div class="table-responsive mt-3">
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th scope="col">Device ID/port</th>
                     <th scope="col">Port Name</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(itemport, index2) in getconfig.ports" :key="index2">
                     <td scope="col">
-                        <!-- {{ Object.keys(itemport)}} -->
                         {{ index2 }}
                     </td>
                     <td scope="col">
                         {{ itemport.interfaces[0].name }}
                     </td>
-                    <!-- <td scope="col">
-                        {{ itemport["name"] }}
-                    </td>
-                    <td scope="col">
-                        {{ itemport["description"] }}
-                    </td> -->
-                    <!-- <td scope="col">
-                        <p v-show="item['state'] == 'ACTIVE'" style="color: green; font-weight: bold;">{{ item['state'] }}</p>
-                        <p v-show="item['state'] == 'INSTALLED'">{{ item['state'] }}</p>
-                    </td>
                      <td scope="col">
-                        <button type="button" v-show="item['state'] == 'INSTALLED'" class="btn btn-primary" @click="activateApp(item['name'])">Activate</button>
-                        <button type="button" v-show="item['state'] == 'ACTIVE'" class="btn btn-danger" @click="deActivateApp(item['name'])">Deactivate</button>
-                    </td>  -->
+                        <button type="button" class="btn btn-danger" @click="delPort(index2)">Delete</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -188,24 +174,24 @@ export default {
         });
     },
     methods: {
-        activateApp(name) {
-            UserService.activateApp(name).then((response) => {
+        async activateApp(name) {
+            await UserService.activateApp(name).then((response) => {
                 this.activateAppmsg = response.data;
                 this.activateAppSuccess = true;
                 this.updateData();
                 console.log(this.activateAppmsg);
             });
         },
-        deActivateApp(name) {
-            UserService.deActivateApp(name).then((response) => {
+        async deActivateApp(name) {
+           await UserService.deActivateApp(name).then((response) => {
                 this.activateAppmsg = response.data;
                 this.activateAppSuccess = true;
                 this.updateData();
                 console.log(this.activateAppmsg);
             });
         },
-        updateData() {
-            UserService.getApp().then((response) => {
+        async updateData() {
+           await UserService.getApp().then((response) => {
             this.content = response.data;
         },
         (error) => {
@@ -217,7 +203,7 @@ export default {
                 error.toString();
         });
 
-        UserService.getConfig().then((response) => {
+        await UserService.getConfig().then((response) => {
             this.getconfig = response.data;
         },
         (error) => {
@@ -229,8 +215,14 @@ export default {
                 error.toString();
         });
         },
-        configPort(id, port, name) {
-            UserService.portConfig(id, port.toString(), name).then((response) => {
+        async configPort(id, port, name) {
+            await UserService.portConfig(id, port.toString(), name).then((response) => {
+                this.portconfigmsg = response.data;
+                this.updateData();
+            });
+        },
+        async delPort(id) {
+            await UserService.deletePort(id).then((response) => {
                 this.portconfigmsg = response.data;
                 this.updateData();
             });

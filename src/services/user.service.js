@@ -35,6 +35,10 @@ class UserService {
     getConfig() {
         return axios.get(`${API_URL}/config`, { headers: authHeader() });
     }
+
+    deletePort(id) {
+        return axios.post(`${API_URL}/portdelete`, { headers: authHeader(), portId: id })
+    }
 }
 
 export default new UserService();
