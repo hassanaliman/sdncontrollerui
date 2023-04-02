@@ -45,6 +45,7 @@
     </div>
     </div>
   </div>
+
   <div class="accordion-item">
     <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
@@ -84,15 +85,17 @@
             <div class="input-group mb-3 mt-3">
                 <input type="text" v-model="portname" min="1" class="form-control" placeholder="Port Name">
             </div>
-            </div>
+
+            <button type="button" class="btn btn-primary" @click="configPort(selected.id, portnum, portname)">Submit Config</button>
         </div>
         </div>
-        <button type="button" class="btn btn-primary" @click="configPort(selected.id, portnum, portname)">Submit Config</button>
+        </div>
         <div class="table-responsive mt-3">
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Device ID/port</th>
+                    <th scope="col">Device</th>
+                    <th scope="col">Port</th>
                     <th scope="col">Port Name</th>
                     <th scope="col"></th>
                 </tr>
@@ -100,13 +103,119 @@
             <tbody>
                 <tr v-for="(itemport, index2) in getconfig.ports" :key="index2">
                     <td scope="col">
-                        {{ index2 }}
+                        {{ index2.split("/")[0] }}
+                    </td>
+                    <td scope="col">
+                        {{ index2.split("/")[1] }}
                     </td>
                     <td scope="col">
                         {{ itemport.interfaces[0].name }}
                     </td>
                      <td scope="col">
                         <button type="button" class="btn btn-danger" @click="delPort(index2)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+        VPLS Configuration
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+      <div class="accordion-body">
+        <div class="container text-center">
+            <div class="row mb-3">
+            
+        <div class="col">
+            <strong>Assign a VPLS Name:</strong>
+            <div class="input-group mb-3 mt-3">
+                <input type="text" v-model="vplsname" min="1" class="form-control" placeholder="Port Name">
+            </div>
+            <button type="button" class="btn btn-primary" @click="configVpls(vplsname)">Submit VPLS Name</button>
+        </div>
+        
+        </div>
+        <div class="row">
+            <div class="col">
+                    <strong>Choose VPLS:</strong>
+                    <select required
+                        v-model="selectedVpls"
+                        class="form-select mb-3 mt-3"
+                        aria-label="Select a device"
+                        placeholder="Choose a Device">
+                    
+                    <option
+                        v-for="(vplsList, indexVplsList) in getVpls.vplss"
+                        v-bind:value="vplsList.name"
+                        :key="indexVplsList">
+                        {{ vplsList.name }}
+                    </option>
+                    </select>
+                </div>
+            <div class="col">
+                    <strong>Choose Device:</strong>
+                    <select required
+                        v-model="selected2"
+                        class="form-select mb-3 mt-3"
+                        aria-label="Select a device"
+                        placeholder="Choose a Device">
+                    
+                    <option
+                        v-for="(devicevpls, indexDeviceVpls) in devices.devices"
+                        v-bind:value="{ id: devicevpls.id}"
+                        :key="indexDeviceVpls">
+                        {{ devicevpls.id }}
+                    </option>
+                    </select>
+                </div>
+                <div class="col">
+                   <strong>Choose Port:</strong>
+                    <div class="input-group mb-3 mt-3">
+                    <input type="number" v-model="portNumVpls" min="1" class="form-control" placeholder="Choose Port">
+                </div>
+            </div>
+            <div class="col">
+            <strong>Port Name:</strong>
+            <div class="input-group mb-3 mt-3">
+                <input type="text" v-model="portNameVpls" min="1" class="form-control" placeholder="Port Name">
+            </div>
+
+            <button type="button" class="btn btn-primary" @click="configPortVpls(selectedVpls, selected2.id, portNumVpls, portNameVpls)">Submit VPLS Port</button>
+        </div>
+        </div>
+        </div>
+        
+        <div class="table-responsive mt-3">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">VPLS Name</th>
+                    <th scope="col">Asscociated Port Name</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(vplsitem, indexvplsitem) in getVpls.vplss" :key="indexvplsitem">
+                    <td scope="col">
+                        {{ vplsitem.name }}
+                    </td>
+                    <td scope="col">
+                       <p v-for="(vplsInterface, indexVplsInterface) in vplsitem.interfaces" :key="indexVplsInterface">
+                        {{ vplsInterface.name }}
+                    </p> 
+                    </td>
+                    <td scope="col">
+                        {{ indexvplsitem }}
+                    </td>
+                     <td scope="col">
+                        <button type="button" class="btn btn-danger" @click="delVpls(vplsitem.name)">Delete</button>
                     </td>
                 </tr>
             </tbody>
@@ -128,12 +237,20 @@ export default {
             content: "",
             devices: "",
             selected: "",
+            selected2: [],
             portname: "",
+            vplsname: "",
+            vplsConfigmsg:"",
             activateAppmsg: "",
             activateAppSuccess: false,
             portnum: "",
             portconfigmsg: "",
-            getconfig:""
+            getconfig:"",
+            getVpls:"",
+            vplsPortConfigmsg:"",
+            portNumVpls:"",
+            portNameVpls:"",
+            selectedVpls:""
         }
     },
     mounted() {
@@ -172,27 +289,42 @@ export default {
                 error.message || 
                 error.toString();
         });
+
+        UserService.getVplsList().then((response) => {
+            this.getVpls = response.data;
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
     },
     methods: {
-        async activateApp(name) {
-            await UserService.activateApp(name).then((response) => {
+        activateApp(name) {
+            UserService.activateApp(name).then((response) => {
                 this.activateAppmsg = response.data;
                 this.activateAppSuccess = true;
                 this.updateData();
                 console.log(this.activateAppmsg);
             });
         },
-        async deActivateApp(name) {
-           await UserService.deActivateApp(name).then((response) => {
+        deActivateApp(name) {
+            UserService.deActivateApp(name).then((response) => {
                 this.activateAppmsg = response.data;
                 this.activateAppSuccess = true;
                 this.updateData();
                 console.log(this.activateAppmsg);
             });
         },
-        async updateData() {
-           await UserService.getApp().then((response) => {
+        updateData() {
+            UserService.getApp().then((response) => {
             this.content = response.data;
+            this.updateDevice();
+            this.updateConfig();
+            this.getVplsList();
         },
         (error) => {
             this.content = 
@@ -202,9 +334,23 @@ export default {
                 error.message || 
                 error.toString();
         });
-
-        await UserService.getConfig().then((response) => {
-            this.getconfig = response.data;
+        },
+        updateConfig() {
+            UserService.getConfig().then((response) => {
+                    this.getconfig = response.data;
+                },
+                (error) => {
+                    this.content = 
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                        error.message || 
+                        error.toString();
+                });
+        },
+        updateDevice() {
+            UserService.getDevice().then((response) => {
+            this.devices = response.data;
         },
         (error) => {
             this.content = 
@@ -215,17 +361,45 @@ export default {
                 error.toString();
         });
         },
-        async configPort(id, port, name) {
-            await UserService.portConfig(id, port.toString(), name).then((response) => {
+        configPort(id, port, name) {
+            UserService.portConfig(id, port.toString(), name).then((response) => {
                 this.portconfigmsg = response.data;
                 this.updateData();
             });
         },
-        async delPort(id) {
-            await UserService.deletePort(id).then((response) => {
+        delPort(id) {
+            UserService.deletePort(id).then((response) => {
                 this.portconfigmsg = response.data;
                 this.updateData();
             });
+        },
+        configVpls(name) {
+            UserService.vplsConfig(name).then((response) => {
+                this.vplsConfigmsg = response.data;
+                this.updateData();
+                console.log(this.vplsConfigmsg)
+            });
+        },
+        configPortVpls(vplsName, portDevice, portNum, portName) {
+           console.log(vplsName, portDevice, portNum.toString(), portName)
+           
+            UserService.vplsConfigPort(vplsName, portDevice, portNum, portName).then((response) => {
+               this.vplsPortConfigmsg = response.data;
+               this.updateData();
+               console.log(this.vplsPortConfigmsg)
+           });
+        },
+        getVplsList() {
+            UserService.getVplsList().then((response) => {
+            this.getVpls = response.data;
+        });
+        },
+        delVpls(vplsName) {
+            UserService.delVpls(vplsName).then((response) => {
+            this.vplsConfigmsg = response.data;
+            this.updateData()
+            console.log(this.vplsConfigmsg);
+        });
         }
     }
 }

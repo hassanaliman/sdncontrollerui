@@ -39,6 +39,22 @@ class UserService {
     deletePort(id) {
         return axios.post(`${API_URL}/portdelete`, { headers: authHeader(), portId: id })
     }
+
+    vplsConfig(vplsName) {
+        return axios.post(`${API_URL}/vplsconfig`, { headers: authHeader(), name: vplsName });
+    }
+
+    vplsConfigPort(vplsName, portDevice, portNum, portName) {
+        return axios.post(`${API_URL}/vplsportconfig`, { headers: authHeader(), vplsName: vplsName, deviceId: portDevice, port: portNum.toString(), portName: portName })
+    }
+
+    getVplsList() {
+        return axios.get(`${API_URL}/vpls`, { headers: authHeader() });
+    }
+
+    delVpls(vplsName) {
+        return axios.post(`${API_URL}/delvpls`, { headers: authHeader(), name: vplsName });
+    }
 }
 
 export default new UserService();
