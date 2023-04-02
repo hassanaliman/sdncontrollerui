@@ -377,9 +377,7 @@ export default {
                 console.log(this.vplsConfigmsg)
             });
         },
-        configPortVpls(vplsName, portDevice, portNum, portName) {
-           console.log(vplsName, portDevice, portNum.toString(), portName)
-           
+        configPortVpls(vplsName, portDevice, portNum, portName) {           
             UserService.vplsConfigPort(vplsName, portDevice, portNum, portName).then((response) => {
                this.vplsPortConfigmsg = response.data;
                this.updateData();
