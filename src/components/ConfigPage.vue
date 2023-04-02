@@ -211,9 +211,6 @@
                         {{ vplsInterface.name }}
                     </p> 
                     </td>
-                    <td scope="col">
-                        {{ indexvplsitem }}
-                    </td>
                      <td scope="col">
                         <button type="button" class="btn btn-danger" @click="delVpls(vplsitem.name)">Delete</button>
                     </td>
