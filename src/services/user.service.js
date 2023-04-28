@@ -55,6 +55,10 @@ class UserService {
     delVpls(vplsName) {
         return axios.post(`${API_URL}/delvpls`, { headers: authHeader(), name: vplsName });
     }
+
+    getHostList() {
+        return axios.get(`${API_URL}/hosts`, { headers: authHeader() });
+    }
 }
 
 export default new UserService();

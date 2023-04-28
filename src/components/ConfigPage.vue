@@ -47,6 +47,50 @@
   </div>
 
   <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour">
+        Hosts
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFour">
+      <div class="accordion-body">
+        <div class="table-responsive mt-3">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Host ID</th>
+                    <th scope="col">Mac</th>
+                    <th scope="col">IP Address</th>
+                    <th scope="col">Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(itemHost, indexHost) in getHosts" :key="indexHost">
+                    <td scope="col">
+                        {{ itemHost.id }}
+                    </td>
+                    <td scope="col">
+                        {{ itemHost.mac }}
+                    </td>
+                    <td scope="col">
+                        <p v-for="(itemIp, indexIp) in itemHost.ipAddresses" :key="indexIp">
+                            {{ itemIp }}
+                        </p>
+                    </td>
+                     <td scope="col">
+                        <p v-for="(itemLocation, indexLoc) in itemHost.locations" :key="indexLoc">
+                            {{ itemLocation.elementId + "/" + itemLocation.port }}
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item">
     <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
         Port Configuration
@@ -247,7 +291,8 @@ export default {
             vplsPortConfigmsg:"",
             portNumVpls:"",
             portNameVpls:"",
-            selectedVpls:""
+            selectedVpls:"",
+            getHosts:""
         }
     },
     mounted() {
@@ -298,6 +343,19 @@ export default {
                 error.message || 
                 error.toString();
         });
+
+        UserService.getHostList().then((response) => {
+            let temp = response.data;
+            this.getHosts = temp.hosts;
+        },
+        (error) => {
+            this.content = 
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message || 
+                error.toString();
+        });
     },
     methods: {
         activateApp(name) {
@@ -322,6 +380,7 @@ export default {
             this.updateDevice();
             this.updateConfig();
             this.getVplsList();
+            this.getHostsList();
         },
         (error) => {
             this.content = 
@@ -394,6 +453,12 @@ export default {
             this.vplsConfigmsg = response.data;
             this.updateData()
             console.log(this.vplsConfigmsg);
+        });
+        },
+        getHostsList() {
+            UserService.getHostList().then((response) => {
+                let temp = response.data;
+            this.getHosts = temp.hosts;
         });
         }
     }

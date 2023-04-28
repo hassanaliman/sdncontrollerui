@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h3 class="mt-3">Mikrotik 1</h3>
+    <h3 class="mt-3">of:000062349de15b46</h3>
     <canvas ref="myChart"></canvas><br><br>
-    <h3>Mikrotik 2</h3>
+    <h3>of:000092491a93524c</h3>
     <canvas ref="myChart2"></canvas><br><br>
-    <h3>Mikrotik 3</h3>
+    <h3>of:000072114471fa4b</h3>
     <canvas ref="myChart3"></canvas><br><br>
   </div>
 </template>
